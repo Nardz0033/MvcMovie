@@ -1,0 +1,74 @@
+@model MovieFormViewModel
+<div asp-validation-summary="ModelOnly" class="validation-summary" role="alert"></div>
+<div class="form-card">
+    <div class="form-card-heading"><span class="form-step">01</span><div><h2>The essentials</h2><p>Give this story a place in your collection.</p></div></div>
+    <div class="form-grid">
+        <div class="field field-wide">
+            <label asp-for="Title"></label>
+            <input asp-for="Title" placeholder="e.g. The Grand Budapest Hotel" autocomplete="off" />
+            <span asp-validation-for="Title" class="field-error"></span>
+        </div>
+        <div class="field">
+            <label asp-for="Genre"></label>
+            <select asp-for="Genre">
+                <option value="">Choose a genre</option>
+                @foreach (var genre in Model.Genres)
+                {
+                    <option value="@genre">@genre</option>
+                }
+            </select>
+            <span asp-validation-for="Genre" class="field-error"></span>
+        </div>
+        <div class="field">
+            <label asp-for="Director"></label>
+            <input asp-for="Director" placeholder="e.g. Wes Anderson" />
+            <span asp-validation-for="Director" class="field-error"></span>
+        </div>
+        <div class="field field-wide">
+            <label asp-for="Description"></label>
+            <textarea asp-for="Description" rows="4" placeholder="What makes this film unforgettable?"></textarea>
+            <span asp-validation-for="Description" class="field-error"></span>
+        </div>
+    </div>
+</div>
+<div class="form-card">
+    <div class="form-card-heading"><span class="form-step">02</span><div><h2>The details</h2><p>The little things that make movie night.</p></div></div>
+    <div class="form-grid form-grid-three">
+        <div class="field">
+            <label asp-for="ReleaseYear"></label>
+            <input asp-for="ReleaseYear" type="number" min="1888" max="2100" />
+            <span asp-validation-for="ReleaseYear" class="field-error"></span>
+        </div>
+        <div class="field">
+            <label asp-for="Rating"></label>
+            <input asp-for="Rating" type="number" min="0" max="10" step="0.1" />
+            <span asp-validation-for="Rating" class="field-error"></span>
+        </div>
+        <div class="field">
+            <label asp-for="Duration"></label>
+            <input asp-for="Duration" type="number" min="1" max="600" />
+            <span asp-validation-for="Duration" class="field-error"></span>
+        </div>
+    </div>
+</div>
+<div class="form-card poster-form-card">
+    <div class="form-card-heading"><span class="form-step">03</span><div><h2>Set the scene</h2><p>A great poster makes the whole collection pop.</p></div></div>
+    <div class="poster-upload-row">
+        <div class="poster-preview-wrap">
+            <img id="poster-preview" class="poster-preview @(string.IsNullOrWhiteSpace(Model.CurrentPosterImage) ? "is-placeholder" : "")"
+                 src="@(string.IsNullOrWhiteSpace(Model.CurrentPosterImage) ? Url.Content("~/images/movie-placeholder.svg") : Url.Content($"~/images/movies/{Model.CurrentPosterImage}"))"
+                 alt="Poster preview" />
+            <span class="preview-label">PREVIEW</span>
+        </div>
+        <div class="upload-controls">
+            <label asp-for="PosterUpload" class="upload-label">Movie poster</label>
+            <label class="upload-dropzone" for="PosterUpload">
+                <span class="upload-icon" aria-hidden="true">↑</span>
+                <span><strong>Choose an image</strong><small>JPG, PNG or WEBP · up to 5 MB</small></span>
+            </label>
+            <input asp-for="PosterUpload" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" class="file-input" />
+            <span id="poster-file-name" class="file-name">@(string.IsNullOrWhiteSpace(Model.CurrentPosterImage) ? "No image selected" : "Current poster · choose a file to replace")</span>
+            <span asp-validation-for="PosterUpload" class="field-error"></span>
+        </div>
+    </div>
+</div>

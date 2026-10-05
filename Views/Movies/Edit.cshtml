@@ -1,0 +1,21 @@
+@model MovieFormViewModel
+@{
+    ViewData["Title"] = $"Edit {Model.Title}";
+}
+<section class="form-page container">
+    <a class="back-link form-back" asp-action="Details" asp-route-id="@Model.Id"><span aria-hidden="true">←</span> Back to movie</a>
+    <div class="form-heading">
+        <span class="eyebrow"><span class="eyebrow-dot"></span> MAKE IT YOURS</span>
+        <h1>Fine-tune the <span>details.</span></h1>
+        <p>Keep your collection just the way you like it.</p>
+    </div>
+    <form asp-action="Edit" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data" class="movie-form">
+        <input asp-for="Id" type="hidden" />
+        <input asp-for="CurrentPosterImage" type="hidden" />
+        <partial name="_MovieForm" model="Model" />
+        <div class="form-actions">
+            <a class="button button-quiet" asp-action="Details" asp-route-id="@Model.Id">Cancel</a>
+            <button class="button button-primary" type="submit">Save changes <span aria-hidden="true">↗</span></button>
+        </div>
+    </form>
+</section>

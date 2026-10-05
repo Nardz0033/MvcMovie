@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 900" role="img" aria-label="Abstract cinematic poster">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#202637"/>
+      <stop offset=".55" stop-color="#111723"/>
+      <stop offset="1" stop-color="#40251f"/>
+    </linearGradient>
+    <radialGradient id="glow">
+      <stop stop-color="#f08a56" stop-opacity=".75"/>
+      <stop offset="1" stop-color="#f08a56" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="600" height="900" fill="url(#bg)"/>
+  <circle cx="420" cy="330" r="280" fill="url(#glow)"/>
+  <path d="M0 690 210 430l112 145 83-95 195 220v200H0z" fill="#0b0d13" opacity=".7"/>
+  <circle cx="300" cy="420" r="94" fill="none" stroke="#ffb27f" stroke-opacity=".55" stroke-width="2"/>
+  <circle cx="300" cy="420" r="72" fill="none" stroke="#ffb27f" stroke-opacity=".28"/>
+  <path d="M300 291v258M171 420h258" stroke="#ffb27f" stroke-opacity=".24"/>
+  <text x="300" y="805" text-anchor="middle" fill="#f5e5d8" font-family="Arial,sans-serif" font-size="20" letter-spacing="8" opacity=".75">YOUR NEXT FRAME</text>
+</svg>

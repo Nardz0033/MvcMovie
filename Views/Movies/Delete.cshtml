@@ -1,0 +1,28 @@
+@model Movie
+@{
+    ViewData["Title"] = "Remove movie";
+}
+<section class="delete-page container">
+    <a class="back-link" asp-action="Details" asp-route-id="@Model.Id"><span aria-hidden="true">←</span> Keep this movie</a>
+    <div class="delete-card">
+        <span class="delete-icon" aria-hidden="true">!</span>
+        <span class="eyebrow">ONE LAST LOOK</span>
+        <h1>Remove <span>@Model.Title</span>?</h1>
+        <p>This will remove the film and its poster from your collection. There’s no undo button for this one.</p>
+        <div class="delete-movie-summary">
+            @if (!string.IsNullOrWhiteSpace(Model.PosterImage))
+            {
+                <img src="~/images/movies/@Model.PosterImage" alt="" />
+            }
+            else
+            {
+                <img src="~/images/movie-placeholder.svg" alt="" />
+            }
+            <div><strong>@Model.Title</strong><span>@Model.ReleaseYear · @Model.Genre</span></div>
+        </div>
+        <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="delete-actions">
+            <a class="button button-quiet" asp-action="Details" asp-route-id="@Model.Id">Never mind</a>
+            <button class="button button-danger" type="submit">Yes, remove movie</button>
+        </form>
+    </div>
+</section>

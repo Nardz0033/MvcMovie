@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#090b10" />
+    <title>@ViewData["Title"] · NardzMovie</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header class="site-header">
+        <nav class="navbar container" aria-label="Main navigation">
+            <a class="brand" asp-controller="Movies" asp-action="Index" aria-label="NardzMovie home">
+                <span class="brand-mark" aria-hidden="true">N</span><span>NardzMovie<span class="brand-period">.</span></span>
+            </a>
+            <button class="nav-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="primary-navigation">
+                <span></span><span></span><span></span>
+            </button>
+            <div class="nav-menu" id="primary-navigation">
+                <a class="nav-link" asp-controller="Movies" asp-action="Index">Discover</a>
+                <a class="nav-link" asp-controller="Movies" asp-action="Index" asp-fragment="collection">Collection</a>
+                <form class="nav-search" asp-controller="Movies" asp-action="Index" method="get" role="search">
+                    <label class="visually-hidden" for="nav-search">Search films</label>
+                    <span aria-hidden="true" class="search-icon">⌕</span>
+                    <input id="nav-search" type="search" name="search" placeholder="Search movies..." />
+                    <kbd>/</kbd>
+                </form>
+                <a class="button button-small button-primary nav-add" asp-controller="Movies" asp-action="Create"><span aria-hidden="true">＋</span> Add a movie</a>
+            </div>
+        </nav>
+    </header>
+    <main id="main-content" class="page-shell">
+        <div class="container">
+            @if (TempData["Success"] is string success)
+            {
+                <div class="flash-message flash-success" role="status">@success</div>
+            }
+            @if (TempData["Error"] is string error)
+            {
+                <div class="flash-message flash-error" role="alert">@error</div>
+            }
+        </div>
+        @RenderBody()
+    </main>
+    <footer class="site-footer container">
+        <a class="brand brand-footer" asp-controller="Movies" asp-action="Index"><span class="brand-mark">N</span><span>NardzMovie<span class="brand-period">.</span></span></a>
+        <p>A little more cinema in your everyday.</p>
+        <span>© @DateTime.Now.Year NARDZMOVIE FILM CLUB</span>
+    </footer>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

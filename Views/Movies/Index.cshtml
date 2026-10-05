@@ -1,0 +1,116 @@
+@model MovieCatalogViewModel
+@{
+    ViewData["Title"] = "Discover movies";
+    var featured = Model.FeaturedMovie;
+}
+
+<section class="hero container">
+    <div class="hero-copy">
+        <span class="eyebrow"><span class="eyebrow-dot"></span> YOUR PERSONAL FILM CLUB</span>
+        <h1>Stories worth<br />staying in <span>for.</span></h1>
+        <p>Keep the films you love close. Find your next favorite among a hand-picked collection of the good stuff.</p>
+        <a class="button button-primary hero-button" href="#collection">Explore the collection <span aria-hidden="true">↘</span></a>
+        <div class="hero-note"><span class="hero-note-rule"></span> A collection of <strong>@Model.Movies.Count.ToString("00")</strong> films &amp; counting</div>
+    </div>
+    <div class="hero-art" aria-label="Featured movie">
+        <div class="hero-orbit orbit-one"></div>
+        <div class="hero-orbit orbit-two"></div>
+        <div class="hero-poster-wrap">
+            @if (!string.IsNullOrWhiteSpace(featured?.PosterImage))
+            {
+                <img class="hero-poster" src="~/images/movies/@featured.PosterImage" alt="@featured.Title poster" />
+            }
+            else
+            {
+                <img class="hero-poster" src="~/images/movie-placeholder.svg" alt="Abstract movie poster artwork" />
+            }
+            <div class="hero-poster-shade"></div>
+            <div class="hero-poster-label">
+                <span class="eyebrow">EDITOR'S PICK</span>
+                <strong>@(featured?.Title ?? "A world of cinema")</strong>
+                <span>@(featured is null ? "Your next favorite awaits" : $"{featured.ReleaseYear}  ·  ★ {featured.Rating:0.0}")</span>
+            </div>
+        </div>
+        <div class="floating-tag tag-top"><span class="tag-star">✦</span> MADE FOR MOVIE LOVERS</div>
+        <div class="floating-tag tag-bottom"><span class="tag-pulse"></span> YOUR NEXT WATCH IS HERE</div>
+        <span class="hero-sparkle sparkle-one">✳</span>
+        <span class="hero-sparkle sparkle-two">✦</span>
+    </div>
+</section>
+
+<section class="collection-section container" id="collection">
+    <div class="section-heading">
+        <div>
+            <span class="eyebrow">THE GOOD STUFF</span>
+            <h2>Find your <span>next watch.</span></h2>
+        </div>
+        <a class="text-link desktop-add" asp-controller="Movies" asp-action="Create">＋ Add to your collection</a>
+    </div>
+    <div class="catalog-toolbar">
+        <form class="catalog-search" asp-controller="Movies" asp-action="Index" method="get" role="search">
+            <span class="search-icon" aria-hidden="true">⌕</span>
+            <label class="visually-hidden" for="catalog-search">Search by title, genre, or director</label>
+            <input id="catalog-search" type="search" name="search" value="@Model.Search" placeholder="Search by title, genre, director..." />
+            @if (!string.IsNullOrEmpty(Model.Genre))
+            {
+                <input type="hidden" name="genre" value="@Model.Genre" />
+            }
+            <button type="submit">Search</button>
+        </form>
+        <a class="button button-small button-outline mobile-add" asp-controller="Movies" asp-action="Create">＋ Add movie</a>
+    </div>
+    <div class="genre-list" aria-label="Filter by genre">
+        <a class="genre-chip @(Model.Genre is null ? "active" : "")" asp-action="Index" asp-route-search="@Model.Search" asp-route-genre="">All films <span>@Model.Movies.Count</span></a>
+        @foreach (var genre in Model.Genres)
+        {
+            <a class="genre-chip @(string.Equals(Model.Genre, genre, StringComparison.OrdinalIgnoreCase) ? "active" : "")" asp-action="Index" asp-route-search="@Model.Search" asp-route-genre="@genre">@genre</a>
+        }
+    </div>
+
+    <div class="results-caption">
+        <span>@(Model.Search is null ? "CURATED FOR YOUR NEXT MOVIE NIGHT" : $"RESULTS FOR “{Model.Search.ToUpperInvariant()}”")</span>
+        <span>@Model.Movies.Count @(Model.Movies.Count == 1 ? "FILM" : "FILMS")</span>
+    </div>
+    @if (Model.Movies.Count == 0)
+    {
+        <div class="empty-state">
+            <span class="empty-icon">⌕</span>
+            <h3>No films in this frame.</h3>
+            <p>Try a different search or genre, or add the movie you had in mind.</p>
+            <a class="button button-primary" asp-action="Create">Add a movie</a>
+        </div>
+    }
+    else
+    {
+        <div class="movie-grid">
+            @for (var movieIndex = 0; movieIndex < Model.Movies.Count; movieIndex++)
+            {
+                var movie = Model.Movies[movieIndex];
+                <article class="movie-card" style="--card-index: @movieIndex">
+                    <a class="movie-card-link" asp-action="Details" asp-route-id="@movie.Id" aria-label="View @movie.Title details">
+                        <div class="poster-frame">
+                            @if (!string.IsNullOrWhiteSpace(movie.PosterImage))
+                            {
+                                <img class="movie-poster" src="~/images/movies/@movie.PosterImage" alt="@movie.Title poster" loading="lazy" />
+                            }
+                            else
+                            {
+                                <img class="movie-poster" src="~/images/movie-placeholder.svg" alt="Abstract movie poster artwork" loading="lazy" />
+                            }
+                            <span class="rating-badge"><span>★</span> @movie.Rating.ToString("0.0")</span>
+                            <div class="poster-overlay">
+                                <span class="overlay-genre">@movie.Genre</span>
+                                <h3>@movie.Title</h3>
+                                <span class="overlay-cta">View film <span aria-hidden="true">↗</span></span>
+                            </div>
+                        </div>
+                        <div class="movie-card-meta">
+                            <span>@movie.ReleaseYear</span><span class="meta-dot"></span><span>@(movie.Duration / 60)h @(movie.Duration % 60)m</span>
+                            <span class="card-genre">@movie.Genre</span>
+                        </div>
+                    </a>
+                </article>
+            }
+        </div>
+    }
+</section>

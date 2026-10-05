@@ -1,0 +1,19 @@
+@model MovieFormViewModel
+@{
+    ViewData["Title"] = "Add a movie";
+}
+<section class="form-page container">
+    <a class="back-link form-back" asp-action="Index"><span aria-hidden="true">←</span> Back to collection</a>
+    <div class="form-heading">
+        <span class="eyebrow"><span class="eyebrow-dot"></span> GROW YOUR COLLECTION</span>
+        <h1>Add a <span>little magic.</span></h1>
+        <p>Save a film for your next perfect movie night.</p>
+    </div>
+    <form asp-action="Create" method="post" enctype="multipart/form-data" class="movie-form">
+        <partial name="_MovieForm" model="Model" />
+        <div class="form-actions">
+            <a class="button button-quiet" asp-action="Index">Cancel</a>
+            <button class="button button-primary" type="submit">Add to collection <span aria-hidden="true">↗</span></button>
+        </div>
+    </form>
+</section>

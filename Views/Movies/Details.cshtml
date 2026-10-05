@@ -1,0 +1,38 @@
+@model Movie
+@{
+    ViewData["Title"] = Model.Title;
+}
+<section class="detail-page">
+    <div class="detail-backdrop" style="background-image: url('@(string.IsNullOrWhiteSpace(Model.PosterImage) ? Url.Content("~/images/movie-placeholder.svg") : Url.Content($"~/images/movies/{Model.PosterImage}"))')"></div>
+    <div class="detail-content container">
+        <a class="back-link" asp-action="Index"><span aria-hidden="true">←</span> Back to collection</a>
+        <div class="detail-layout">
+            <div class="detail-poster">
+                @if (!string.IsNullOrWhiteSpace(Model.PosterImage))
+                {
+                    <img src="~/images/movies/@Model.PosterImage" alt="@Model.Title poster" />
+                }
+                else
+                {
+                    <img src="~/images/movie-placeholder.svg" alt="Abstract movie poster artwork" />
+                }
+            </div>
+            <div class="detail-copy">
+                <span class="eyebrow"><span class="eyebrow-dot"></span> @Model.Genre.ToUpperInvariant() <span class="detail-divider">/</span> @Model.ReleaseYear</span>
+                <h1>@Model.Title</h1>
+                <div class="detail-stats">
+                    <span class="detail-rating">★ @Model.Rating.ToString("0.0") <small>/ 10</small></span>
+                    <span>@(Model.Duration / 60)h @(Model.Duration % 60)m</span>
+                    <span>@Model.ReleaseYear</span>
+                </div>
+                <p class="detail-description">@Model.Description</p>
+                <div class="detail-director"><span>DIRECTOR</span><strong>@Model.Director</strong></div>
+                <div class="detail-director"><span>ADDED TO FRAME</span><strong>@Model.CreatedAt.ToLocalTime().ToString("MMMM d, yyyy")</strong></div>
+                <div class="detail-actions">
+                    <a class="button button-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit movie <span aria-hidden="true">↗</span></a>
+                    <a class="button button-danger-outline" asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
