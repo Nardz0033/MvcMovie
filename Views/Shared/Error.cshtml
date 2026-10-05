@@ -1,0 +1,14 @@
+@model ErrorViewModel
+@{
+    ViewData["Title"] = "Something went wrong";
+}
+<section class="container error-page">
+    <span class="eyebrow">A brief intermission</span>
+    <h1>That scene didn't go to plan.</h1>
+    <p>We hit an unexpected error. Please head back and try again.</p>
+    @if (Model.ShowRequestId)
+    {
+        <p class="muted small">Reference: <code>@Model.RequestId</code></p>
+    }
+    <a class="button button-primary" asp-controller="Movies" asp-action="Index">Back to the collection</a>
+</section>
