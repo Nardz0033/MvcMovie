@@ -10,7 +10,7 @@
         <h1>Stories worth<br />staying in <span>for.</span></h1>
         <p>Keep the films you love close. Find your next favorite among a hand-picked collection of the good stuff.</p>
         <a class="button button-primary hero-button" href="#collection">Explore the collection <span aria-hidden="true">↘</span></a>
-        <div class="hero-note"><span class="hero-note-rule"></span> A collection of <strong>@Model.Movies.Count.ToString("00")</strong> films &amp; counting</div>
+        <div class="hero-note"><span class="hero-note-rule"></span> A collection of <strong>@Model.TotalCount.ToString("00")</strong> films &amp; counting</div>
     </div>
     <div class="hero-art" aria-label="Featured movie">
         <div class="hero-orbit orbit-one"></div>
@@ -57,27 +57,40 @@
             }
             <button type="submit">Search</button>
         </form>
+        @if (Model.Search is not null)
+        {
+            <a class="clear-search-link" asp-action="Index" asp-route-genre="@Model.Genre">Clear search</a>
+        }
         <a class="button button-small button-outline mobile-add" asp-controller="Movies" asp-action="Create">＋ Add movie</a>
     </div>
     <div class="genre-list" aria-label="Filter by genre">
-        <a class="genre-chip @(Model.Genre is null ? "active" : "")" asp-action="Index" asp-route-search="@Model.Search" asp-route-genre="">All films <span>@Model.Movies.Count</span></a>
+        <a class="genre-chip @(Model.Genre is null ? "active" : "")" asp-action="Index" asp-route-search="@Model.Search" asp-route-genre="">All films <span>@Model.SearchResultCount</span></a>
         @foreach (var genre in Model.Genres)
         {
-            <a class="genre-chip @(string.Equals(Model.Genre, genre, StringComparison.OrdinalIgnoreCase) ? "active" : "")" asp-action="Index" asp-route-search="@Model.Search" asp-route-genre="@genre">@genre</a>
+            var genreCount = Model.GenreCounts.GetValueOrDefault(genre);
+            <a class="genre-chip @(string.Equals(Model.Genre, genre, StringComparison.OrdinalIgnoreCase) ? "active" : "")" asp-action="Index" asp-route-search="@Model.Search" asp-route-genre="@genre">@genre <span>@genreCount</span></a>
         }
     </div>
 
     <div class="results-caption">
         <span>@(Model.Search is null ? "CURATED FOR YOUR NEXT MOVIE NIGHT" : $"RESULTS FOR “{Model.Search.ToUpperInvariant()}”")</span>
-        <span>@Model.Movies.Count @(Model.Movies.Count == 1 ? "FILM" : "FILMS")</span>
+        <span>@(Model.TotalCount == 0 ? "0 FILMS" : $"SHOWING {Model.FirstItem}–{Model.LastItem} OF {Model.TotalCount} FILMS")</span>
     </div>
     @if (Model.Movies.Count == 0)
     {
         <div class="empty-state">
             <span class="empty-icon">⌕</span>
             <h3>No films in this frame.</h3>
-            <p>Try a different search or genre, or add the movie you had in mind.</p>
-            <a class="button button-primary" asp-action="Create">Add a movie</a>
+            @if (Model.Search is not null || Model.Genre is not null)
+            {
+                <p>Try a different search or genre, or clear your filters to see the full collection.</p>
+                <a class="button button-primary" asp-action="Index">Clear filters</a>
+            }
+            else
+            {
+                <p>Add the first movie to start your collection.</p>
+                <a class="button button-primary" asp-action="Create">Add a movie</a>
+            }
         </div>
     }
     else
@@ -112,5 +125,27 @@
                 </article>
             }
         </div>
+        @if (Model.TotalPages > 1)
+        {
+            <nav class="pagination" aria-label="Movie catalog pages">
+                @if (Model.PageNumber > 1)
+                {
+                    <a class="button button-small button-outline" asp-action="Index" asp-route-search="@Model.Search" asp-route-genre="@Model.Genre" asp-route-page="@(Model.PageNumber - 1)">← Previous</a>
+                }
+                else
+                {
+                    <span class="button button-small button-outline pagination-disabled" aria-disabled="true">← Previous</span>
+                }
+                <span class="pagination-status">Page @Model.PageNumber of @Model.TotalPages</span>
+                @if (Model.PageNumber < Model.TotalPages)
+                {
+                    <a class="button button-small button-outline" asp-action="Index" asp-route-search="@Model.Search" asp-route-genre="@Model.Genre" asp-route-page="@(Model.PageNumber + 1)">Next →</a>
+                }
+                else
+                {
+                    <span class="button button-small button-outline pagination-disabled" aria-disabled="true">Next →</span>
+                }
+            </nav>
+        }
     }
 </section>

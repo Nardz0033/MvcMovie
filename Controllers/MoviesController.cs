@@ -12,12 +12,13 @@ public class MoviesController(
 {
     private const long MaxPosterBytes = 5 * 1024 * 1024;
     private const long MaxRequestBytes = MaxPosterBytes + 256 * 1024;
+    private const int CatalogPageSize = 12;
     private static readonly HashSet<string> AllowedExtensions = new(StringComparer.OrdinalIgnoreCase)
     {
         ".jpg", ".jpeg", ".png", ".webp"
     };
 
-    public async Task<IActionResult> Index(string? search, string? genre, CancellationToken cancellationToken)
+    public async Task<IActionResult> Index(string? search, string? genre, int page = 1, CancellationToken cancellationToken = default)
     {
         search = string.IsNullOrWhiteSpace(search) ? null : search.Trim();
         if (search?.Length > 100)
@@ -37,27 +38,47 @@ public class MoviesController(
                 EF.Functions.Like(movie.Director, pattern));
         }
 
+        var genreCounts = await query
+            .GroupBy(movie => movie.Genre)
+            .Select(group => new { Genre = group.Key, Count = group.Count() })
+            .ToDictionaryAsync(item => item.Genre, item => item.Count, cancellationToken);
+        var searchResultCount = genreCounts.Values.Sum();
+
         if (genre is not null)
         {
             query = query.Where(movie => movie.Genre == genre);
         }
 
+        var totalCount = await query.CountAsync(cancellationToken);
+        var totalPages = Math.Max(1, (int)Math.Ceiling(totalCount / (double)CatalogPageSize));
+        page = Math.Clamp(page, 1, totalPages);
+
+        var featured = await query
+            .OrderByDescending(movie => movie.Rating)
+            .ThenByDescending(movie => movie.ReleaseYear)
+            .FirstOrDefaultAsync(cancellationToken) ?? await db.Movies
+                .AsNoTracking()
+                .OrderByDescending(movie => movie.Rating)
+                .FirstOrDefaultAsync(cancellationToken);
+
         var movies = await query
             .OrderByDescending(movie => movie.Rating)
             .ThenByDescending(movie => movie.ReleaseYear)
+            .Skip((page - 1) * CatalogPageSize)
+            .Take(CatalogPageSize)
             .ToListAsync(cancellationToken);
-
-        var featured = movies.FirstOrDefault() ?? await db.Movies
-            .AsNoTracking()
-            .OrderByDescending(movie => movie.Rating)
-            .FirstOrDefaultAsync(cancellationToken);
 
         return View(new MovieCatalogViewModel
         {
             Movies = movies,
             Search = search,
             Genre = genre,
-            FeaturedMovie = featured
+            FeaturedMovie = featured,
+            TotalCount = totalCount,
+            PageNumber = page,
+            PageSize = CatalogPageSize,
+            SearchResultCount = searchResultCount,
+            GenreCounts = genreCounts
         });
     }
 

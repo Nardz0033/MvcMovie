@@ -5,10 +5,35 @@ namespace MvcMovie.Data;
 
 public static class DbInitializer
 {
+    private static readonly IReadOnlyDictionary<string, string> StarterPosters = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+    {
+        ["Inception"] = "inception.svg",
+        ["Interstellar"] = "interstellar.svg",
+        ["The Dark Knight"] = "dark-knight.svg",
+        ["Spider-Man: Into the Spider-Verse"] = "spider-verse.svg",
+        ["Avengers: Endgame"] = "endgame.svg",
+        ["La La Land"] = "la-la-land.svg"
+    };
+
     public static async Task SeedAsync(ApplicationDbContext db)
     {
         if (await db.Movies.AnyAsync())
         {
+            var existingMovies = await db.Movies
+                .Where(movie => movie.PosterImage == null || movie.PosterImage == "")
+                .ToListAsync();
+            foreach (var movie in existingMovies)
+            {
+                if (StarterPosters.TryGetValue(movie.Title, out var poster))
+                {
+                    movie.PosterImage = poster;
+                }
+            }
+
+            if (existingMovies.Count > 0)
+            {
+                await db.SaveChangesAsync();
+            }
             return;
         }
 
@@ -23,6 +48,7 @@ public static class DbInitializer
                 Rating = 8.8m,
                 Duration = 148,
                 Director = "Christopher Nolan",
+                PosterImage = StarterPosters["Inception"],
                 CreatedAt = DateTime.UtcNow
             },
             new Movie
@@ -34,6 +60,7 @@ public static class DbInitializer
                 Rating = 8.7m,
                 Duration = 169,
                 Director = "Christopher Nolan",
+                PosterImage = StarterPosters["Interstellar"],
                 CreatedAt = DateTime.UtcNow
             },
             new Movie
@@ -45,6 +72,7 @@ public static class DbInitializer
                 Rating = 9.0m,
                 Duration = 152,
                 Director = "Christopher Nolan",
+                PosterImage = StarterPosters["The Dark Knight"],
                 CreatedAt = DateTime.UtcNow
             },
             new Movie
@@ -56,6 +84,7 @@ public static class DbInitializer
                 Rating = 8.4m,
                 Duration = 117,
                 Director = "Bob Persichetti",
+                PosterImage = StarterPosters["Spider-Man: Into the Spider-Verse"],
                 CreatedAt = DateTime.UtcNow
             },
             new Movie
@@ -67,6 +96,7 @@ public static class DbInitializer
                 Rating = 8.4m,
                 Duration = 181,
                 Director = "Anthony Russo",
+                PosterImage = StarterPosters["Avengers: Endgame"],
                 CreatedAt = DateTime.UtcNow
             },
             new Movie
@@ -78,6 +108,7 @@ public static class DbInitializer
                 Rating = 8.0m,
                 Duration = 128,
                 Director = "Damien Chazelle",
+                PosterImage = StarterPosters["La La Land"],
                 CreatedAt = DateTime.UtcNow
             }
         };

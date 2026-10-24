@@ -5,3 +5,4 @@ obj/
 *.db-wal
 wwwroot/images/movies/*
 !wwwroot/images/movies/.gitkeep
+!wwwroot/images/movies/*.svg
